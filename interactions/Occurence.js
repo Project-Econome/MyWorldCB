@@ -28,7 +28,7 @@ $let[newball;$arrayRandomValue[newdata]]
 
 $jsonLoad[json;$readFile[Balls/$get[newball]]]
 
-$sendMessage[$channelID;Spawn Test
+$sendMessage[$getGuildVar[SpawnChan];A wild countryball has spawned!
 
 $attachment[.$env[json;imagePath];Ball.png]
 
