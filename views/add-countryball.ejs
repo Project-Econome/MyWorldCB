@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Country Ball</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h1>Add a New Country Ball</h1>
+  <form action="/add-countryball" method="POST" enctype="multipart/form-data">
+    <label for="country">Country:</label>
+    <input type="text" name="country" id="country" required><br>
+
+    <label for="shortName">Short Name:</label>
+    <input type="text" name="shortName" id="shortName" required><br>
+
+    <label for="catchNames">Catch Names:</label>
+    <input type="text" name="catchNames" id="catchNames" required><br>
+
+    <label for="health">Health:</label>
+    <input type="number" name="health" id="health" required><br>
+
+    <label for="strength">Strength:</label>
+    <input type="number" name="strength" id="strength" required><br>
+
+    <label for="rarity">Rarity:</label>
+    <input type="number" name="rarity" id="rarity" required><br>
+
+    <label for="emojiID">Emoji ID:</label>
+    <input type="text" name="emojiID" id="emojiID" required><br>
+
+    <label for="image">Image:</label>
+    <input type="file" name="image" id="image" required><br><br>
+
+    <button type="submit">Add Country Ball</button>
+  </form>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit <%= countryBall.country %></title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h1>Edit Country Ball: <%= countryBall.country %></h1>
+
+  <form action="/edit-countryball/<%= countryBall.shortName %>" method="POST" enctype="multipart/form-data">
+    <label for="country">Country Name:</label>
+    <input type="text" id="country" name="country" value="<%= countryBall.country %>" required>
+    
+    <label for="catchNames">Catch Names:</label>
+    <input type="text" id="catchNames" name="catchNames" value="<%= countryBall.catchNames %>" required>
+    
+    <label for="health">Health:</label>
+    <input type="number" id="health" name="health" value="<%= countryBall.health %>" required>
+
+    <label for="strength">Strength:</label>
+    <input type="number" id="strength" name="strength" value="<%= countryBall.strength %>" required>
+
+    <label for="rarity">Rarity:</label>
+    <input type="number" id="rarity" name="rarity" value="<%= countryBall.rarity %>" required>
+
+    <label for="emojiID">Emoji ID:</label>
+    <input type="text" id="emojiID" name="emojiID" value="<%= countryBall.emojiID %>" required>
+
+    <label for="image">Country Ball Image:</label>
+    <input type="file" id="image" name="image">
+
+    <button type="submit">Update Country Ball</button>
+  </form>
+</body>
+</html>

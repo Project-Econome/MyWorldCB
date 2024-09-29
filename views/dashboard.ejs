@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Country Balls Dashboard</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h1>Country Balls Dashboard</h1>
+  <div class="dashboard">
+    <a href="/add-countryball">Add New Country Ball</a>
+    <ul>
+      <% countryBalls.forEach(ball => { %>
+        <li>
+          <img src="<%= ball.imagePath %>" alt="<%= ball.country %>" class="country-ball-image">
+          <div class="country-ball-info">
+            <h2><%= ball.country %> (<%= ball.shortName %>)</h2>
+            <p>Health: <%= ball.health %>, Strength: <%= ball.strength %>, Rarity: <%= ball.rarity %></p>
+          </div>
+          <p><a href="<%= '/edit-countryball/' + ball.shortName %>">Edit</a>
+            <a href="/delete-countryball/<%= ball.shortName %>" class="delete-icon">🗑️</a></p>
+        </li>
+      <% }) %>
+    </ul>
+  </div>
+</body>
+</html>
