@@ -1,10 +1,10 @@
 {
   "country": "Japan",
   "shortName": "JP",
-  "catchNames": "Japan",
-  "health": 1,
-  "strength": 1,
-  "rarity": 10,
-  "emojiID": "1",
-  "imagePath": "/uploads/images/japan-1725126699407-image.png"
+  "catchNames": "JP, Japan",
+  "health": "10",
+  "strength": "10",
+  "rarity": "10",
+  "emojiID": "1290071108393107538",
+  "imagePath": "/uploads/images/image-1727639583069-336674078.png"
 }

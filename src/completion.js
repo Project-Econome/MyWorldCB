@@ -19,7 +19,7 @@ $if[$checkContains[$getUserVar[Caught];$env[balls]]==true;
 $letSum[owned;1]]
 ]
 
-$let[percentage;$math[($get[owned]/$get[Amount])*100]]
+$let[percentage;$round[$math[($get[owned]/$get[Amount])*100];2]]
 
 $description[$username[$botID] progression: $get[percentage]%]
 
@@ -33,8 +33,36 @@ $let[caught;$env[balls],$get[caught]];
 $let[uncaught;$env[balls],$get[uncaught]]]
 ]
 
-$addField[Owned CountryBalls;$get[caught]]
-$addField[Missing CountryBalls;$get[uncaught]]
+$arrayLoad[owned;,;$get[caught]]
+
+$arrayForEach[owned;id;
+
+$if[$env[id]==;;
+
+$jsonLoad[json;$readFile[Balls/$env[id].json]]
+
+$let[caught2;<:emoji:$env[json;emojiID]> $get[caught2]]
+
+]
+
+]
+
+$arrayLoad[unowned;,;$get[uncaught]]
+
+$arrayForEach[unowned;id;
+
+$if[$env[id]==;;
+
+$jsonLoad[json;$readFile[Balls/$env[id].json]]
+
+$let[uncaught2;<:emoji:$env[json;emojiID]> $get[uncaught2]]
+
+]
+
+]
+
+$addField[Owned CountryBalls;$get[caught2]]
+$addField[Missing CountryBalls;$get[uncaught2]]
 
     
     `

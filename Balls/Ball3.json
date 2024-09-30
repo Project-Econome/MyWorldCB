@@ -1,10 +1,10 @@
 {
-  "country": "Ariel",
-  "shortName": "You There?",
-  "catchNames": "Are You Still Watching?",
-  "health": 69,
-  "strength": 69,
-  "rarity": 1,
-  "emojiID": "e",
-  "imagePath": "/uploads/images/image-1727559266919-955558031.webp"
+  "country": "Russia",
+  "shortName": "USSR",
+  "catchNames": "USSR, Russia",
+  "health": "1",
+  "strength": "1",
+  "rarity": "10",
+  "emojiID": "1290071151434793012",
+  "imagePath": "/uploads/images/image-1727639556776-322056149.webp"
 }

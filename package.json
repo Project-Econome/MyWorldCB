@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "@econome/banan.canvas": "github:Project-Econome/banan.canvas",
+    "@tryforge/forge.canvas": "github:tryforge/forgecanvas#dev",
     "@tryforge/forge.db": "^2.0.6",
     "@tryforge/forgescript": "github:tryforge/forgescript#dev",
     "@tryforge/webserver": "^1.0.1",
