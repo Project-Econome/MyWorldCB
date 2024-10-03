@@ -64,6 +64,8 @@ $let[uncaught2;<:emoji:$env[json;emojiID]> $get[uncaught2]]
 $addField[Owned CountryBalls;$get[caught2]]
 $addField[Missing CountryBalls;$get[uncaught2]]
 
+$addField[Owned EventBalls;$get[caughtEvent]]
+
     
     `
 }

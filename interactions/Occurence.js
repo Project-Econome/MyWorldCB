@@ -2,17 +2,24 @@ module.exports = {
     name: "",
     type: "messageCreate",
     code: `
+
+$if[$getGlobalVar[EventActive]==true;
+$let[directory;Events/$getGlobalVar[Event]]
+;
+$let[directory;Balls]
+]
+
     $if[$or[$authorID==$botID;$isBot==true];;
 $if[$or[$getGuildVar[SpawnChan]==;$guildChannelExists[$guildID;$getGuildVar[SpawnChan]]==false];;
     
 $if[$getGuildCooldownTime[timer]==0;
 
-$arrayLoad[data;,;$readDir[./Balls;,]] 
+$arrayLoad[data;,;$readDir[./$get[directory];,]] 
 
 
 $arrayForEach[data;checked;
 
-$jsonLoad[json;$readFile[Balls/$env[checked]]]
+$jsonLoad[json;$readFile[$get[directory]/$env[checked]]]
 
 $loop[$env[json;rarity];$let[Rare;$env[checked]-$get[Rare]]]
 
@@ -26,7 +33,7 @@ $let[newball;$arrayRandomValue[newdata]]
 
     
 
-$jsonLoad[json;$readFile[Balls/$get[newball]]]
+$jsonLoad[json;$readFile[$get[directory]/$get[newball]]]
 
 $sendMessage[$getGuildVar[SpawnChan];A wild countryball has spawned!
 

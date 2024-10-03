@@ -1,15 +1,37 @@
 module.exports = {
     data: {
-        name: "chance-list",
-        description: "chance lists",
+        name: "spawn",
+        description: "Staff Only Spawn Balls In.",
         type: 1,
+        options: [
+
+{
+
+type: 3,
+name: "ball",
+description: "Ball ID"
+
+}
+
+        ]
      },
     code: `
-$arrayLoad[data;,;$readDir[./Balls;,]] 
+    $onlyForUsers[$ephemeral This is not for you!;$botOwnerID;838105973985771520]
+
+$if[$getGlobalVar[EventActive]==true;
+$let[directory;Events/$getGlobalVar[Event]]
+;
+$let[directory;Balls]
+]
+
+
+
+    $if[$option[ball]==;
+$arrayLoad[data;,;$readDir[./$get[directory];,]] 
 
 $arrayForEach[data;checked;
 
-$jsonLoad[json;$readFile[Balls/$env[checked]]]
+$jsonLoad[json;$readFile[$get[directory]/$env[checked]]]
 
 $loop[$env[json;rarity];$let[Rare;$env[checked]-$get[Rare]]]
 
@@ -20,20 +42,17 @@ $arrayLoad[newdata;-;$get[Rare]]
 $arrayShuffle[newdata]
 
 $let[newball;$arrayRandomValue[newdata]]
-
+    ;
+    
+    $let[newball;$option[ball].json]
+    
+    ]
     
 Sent
 
-$jsonLoad[json;$readFile[Balls/$get[newball]]]
+$jsonLoad[json;$readFile[$get[directory]/$get[newball]]]
 
-$sendMessage[$channelID;Spawn Test
-
-Name: $env[json;country]
-
-Catch Names: $env[json;catchNames]
-
-Rarity Factor: $env[json;rarity]
-
+$sendMessage[$getGuildVar[SpawnChan];A wild countryball has spawned!
 $attachment[.$env[json;imagePath];Ball.png]
 
 $addActionRow
