@@ -8,6 +8,13 @@ $let[directory;Events/$getGlobalVar[Event]]
 $let[directory;Balls]
 ]
 
+$jsonLoad[data;$getComponents[$channelID;$messageID]]
+        $arrayForEach[data;rows;
+        $jsonLoad[row;$env[rows]]
+        $arrayMap[row;comp;
+        $return[$checkCondition[$env[comp;disabled]]]
+        ;result]
+        ]
 
         $if[$checkContains[$customID;.json]==true;
         
@@ -18,7 +25,7 @@ $let[directory;Balls]
         ;
 
         $if[$checkContains[$customID;Catch-]==true;
-        
+        $onlyIf[$env[result]!=false;$interactionReply Sorry I Have Already Been Caught]
         $let[jsonFile;$readFile[$get[directory]/$replace[$customID;Catch-;].json]]
 
         $jsonLoad[json;$get[jsonFile]]
@@ -33,19 +40,7 @@ $let[directory;Balls]
 
         $interactionReply
 
-
-        $jsonLoad[json;$getComponents[$channelID;$messageID;;;disabled]]
-
         
-        $jsonLoad[data;$getComponents[$channelID;$messageID]]
-        $arrayForEach[data;rows;
-        $jsonLoad[row;$env[rows]]
-        $arrayMap[row;comp;
-        $return[$checkCondition[$env[comp;disabled]]]
-        ;result]
-        ]
-       
-$onlyIf[$env[result]==true;$interactionReply Sorry I Have Already Been Caught]
         
         $callFunction[ballSuccess;$authorID;true;$get[Country]]
 
@@ -63,7 +58,7 @@ $onlyIf[$env[result]==true;$interactionReply Sorry I Have Already Been Caught]
 
         ]
 
-        ]
+        
 
         
     `
