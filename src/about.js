@@ -7,7 +7,12 @@ module.exports = {
      },
     code: `
 
-$textSplit[$readDir[./Balls;,];,]
+$if[$getGlobalVar[EventActive]==true;
+$let[directory;Events/$getGlobalVar[Event]]
+;
+$let[directory;Balls]
+]
+$textSplit[$readDir[./$get[directory];,];,]
 
 $title[$username[$botID] Discord Bot]
 $description[Collect CountryBalls on Discord, exchange them and battle with friends!
@@ -15,7 +20,7 @@ $description[Collect CountryBalls on Discord, exchange them and battle with frie
 Running version 1.0.0
 
 **$getSplitTextLength** CountryBalls to collect
-**$userCount** players that caught 0 CountryBalls
+**$userCount** players that caught $getGlobalVar[globalCaught;0] CountryBalls
 **$guildCount** servers playing
 
 This bot was made by **$hyperlink[Econome;https://discord.com/users/838105973985771520]** owned by **$hyperlink[Ariel Aram;https://discord.com/users/525421785001361408]**, consider supporting me on my Ko-Fi :heart:]
