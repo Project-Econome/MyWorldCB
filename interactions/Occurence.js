@@ -10,6 +10,7 @@ $let[directory;Balls]
 ]
 
     $if[$or[$authorID==$botID;$isBot==true];;
+    $onlyIf[$getGuildVar[SpawnChanEnabled]!=false]
 $if[$or[$getGuildVar[SpawnChan]==;$guildChannelExists[$guildID;$getGuildVar[SpawnChan]]==false];;
     
 $if[$getGuildCooldownTime[timer]==0;

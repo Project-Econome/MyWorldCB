@@ -1,7 +1,7 @@
 module.exports = {
     data: {
         name: "channel",
-        description: "The new text channek to set.",
+        description: "The new text channel to set.",
         options: [
             {
                 type: 7,
@@ -14,6 +14,10 @@ module.exports = {
     },
      code: `$onlyForUsers[$ephemeral
  This is not for you!;$botOwnerID;838105973985771520]
- 
+
+ $title[Setup For WorldCB - Done]
+ $description[By Adding/Setting this bot up you hereby agree to our ToS and Privacy Policy]
+ $setGuildVar[SpawnChan;$option[channel]]
+ $setGuildVar[SpawnChanEnabled;true]
  `
  }

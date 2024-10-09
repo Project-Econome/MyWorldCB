@@ -24,7 +24,7 @@ $let[directory;Events/$getGlobalVar[Event]]
 $let[directory;Balls]
 ]
 
-
+$onlyIf[$getGuildVar[SpawnChanEnabled]!=false;Spawning isnt enabled here]
 
     $if[$option[ball]==;
 $arrayLoad[data;,;$readDir[./$get[directory];,]] 
