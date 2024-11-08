@@ -2,9 +2,11 @@
   "country": "Germany",
   "shortName": "Germany",
   "catchNames": "Germany",
-  "health": "1",
-  "strength": "1",
-  "rarity": "0",
+  "health": "2000",
+  "strength": "1700",
+  "rarity": "5",
   "emojiID": "1290760111723249746",
+  "credits": "achi_top",
+  "type": "DEMOCAP.webp",
   "imagePath": "/uploads/images/image-1727814830229-220180641.webp"
 }

@@ -2,9 +2,11 @@
   "country": "Japan",
   "shortName": "JP",
   "catchNames": "JP, Japan",
-  "health": "10",
-  "strength": "10",
-  "rarity": "0",
-  "emojiID": "1290071108393107538",
-  "imagePath": "/uploads/images/image-1727639583069-336674078.png"
+  "health": "1750",
+  "strength": "1200",
+  "rarity": "8",
+  "emojiID": "1291819482443943966",
+  "credits": "Econome",
+  "type": "DEMOCAP.webp",
+  "imagePath": "/uploads/images/imagePath-1730388284447-853198035.png"
 }

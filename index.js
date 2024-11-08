@@ -1,11 +1,21 @@
-const { ForgeClient } = require("@tryforge/forgescript")
-const { ForgeDB } = require("@tryforge/forge.db")
-const { ForgeCanvas } = require("@tryforge/forge.canvas")
+require('dotenv').config();
+const express = require('express');
+const passport = require('passport');
+const DiscordStrategy = require('passport-discord').Strategy;
+const session = require('express-session');
+const mongoose = require('mongoose');
 const multer = require('multer');
-const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
-const express = require('express');
+const bodyParser = require('body-parser');
+const config = require('./config.json');
+const FuzzySet = require('fuzzyset')
+
+// Client initialization for the bot
+const { ForgeClient } = require('@tryforge/forgescript');
+const { ForgeDB } = require('@tryforge/forge.db');
+const { ForgeCanvas } = require("@tryforge/forge.canvas");
+
 
 // Client initialization
    const client = new ForgeClient({
@@ -47,7 +57,7 @@ const express = require('express');
     "extensions": [
         new ForgeDB({
         type: "mongodb",
-url: "mongodb+srv://Fradz:EconomeMusic10@cluster0.fjivzs3.mongodb.net/bot2"
+url: config.mongo
         }),
         new ForgeCanvas()
     ],
@@ -161,13 +171,16 @@ $return[$arrayRandomValue[newdata]]
 
 client.functions.add({
     name: "ballSuccess",
-    params: ["user","true","ball"],
+    params: ["user","true","ball","success","id"],
     code: `
 $scope[
 
 $if[$env[true]==true;
+$jsonLoad[config;$readFile[./config.json]] $let[caught;$env[config;Caught]] $let[name;$env[config;Name]]
+$return[<@$env[user]> You $get[caught] **$env[ball]**! $inlineCode[$env[success]]
 
-$return[<@$env[user]> You Caught **$env[ball]**!]
+$if[$checkContains[$getUserVar[Caught;$env[user]];$env[id]]==false;This is a $bold[new $get[name]] that has been added to your completion!]
+]
 
 ;
 
@@ -181,7 +194,41 @@ $return[<@$env[user]> Wrong Name!]
 `});
 
 
+client.functions.add({
+    name: "privSuccess",
+    params: ["true","ball","success","id"],
+    code: `
+$scope[
 
+$if[$env[true]==true;
+$jsonLoad[config;$readFile[./config.json]] $let[caught;$env[config;Caught]] $let[name;$env[config;Name]]
+$return[A User Has $get[caught] **$env[ball]**! $inlineCode[$env[success]]
+
+$if[$checkContains[$getUserVar[Caught;$env[user]];$env[id]]==false;This is a $bold[new $get[name]] that has been added to your completion!]
+]
+
+;
+
+$return[Wrong Name!]
+
+]
+
+
+] 
+    
+`});
+
+
+client.functions.add({
+    name: "redeem",
+    params: ["ball", "emoji", "response"],
+    code: `
+$scope[
+$return[You Redeemed $env[ball] <:emoji:$env[emoji]>! 
+$if[$env[response]==;;Note: $env[response]]] 
+] 
+    
+`});
 
 
 client.functions.add({
@@ -198,194 +245,223 @@ $return[$env[data;output]]
     
 `});
 
-
 // CountryBall Panel Thing
 
-const app = express();
-const PORT = 3000;
-const ballsDir = path.join(__dirname, 'Balls');
-const uploadsDir = path.join(__dirname, 'uploads/images');
+// Connect to MongoDB (not used for balls but might be for other features)
+mongoose.connect(config.mongo, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('MongoDB connected'))
+    .catch(err => console.log(err));
 
-// Ensure uploads directory exists
+const app = express();
+const PORT = process.env.PORT || 5127;
+
+// Setup session middleware
+app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false }));
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Configure Passport Discord Strategy
+passport.use(new DiscordStrategy({
+    clientID: process.env.DISCORD_CLIENT_ID,
+    clientSecret: process.env.DISCORD_CLIENT_SECRET,
+    callbackURL: process.env.CALLBACK_URL,
+    scope: ['identify', 'guilds']
+}, (accessToken, refreshToken, profile, done) => {
+    return done(null, profile);
+}));
+
+passport.serializeUser((user, done) => {
+    done(null, user);
+});
+
+passport.deserializeUser((obj, done) => {
+    done(null, obj);
+});
+
+// Setup multer for file uploads
+const uploadsDir = path.join(__dirname, 'uploads/images');
 if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+    fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// Configure multer for file uploads
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadsDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
+    destination: function (req, file, cb) {
+        cb(null, uploadsDir);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
 });
+
 const upload = multer({ storage: storage });
 
 // Middleware to handle JSON request body
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Set view engine
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
 // Serve static files (for CSS)
 app.use(express.static('public'));
 
-// Homepage route to display the list of JSON files
+// Homepage route
 app.get('/', (req, res) => {
-  fs.readdir(ballsDir, (err, files) => {
-    if (err) return res.status(500).send('Error reading directory');
-
-    const jsonFiles = files.filter(file => file.endsWith('.json'));
-    const ballData = jsonFiles.map(file => {
-      const filePath = path.join(ballsDir, file);
-      const content = JSON.parse(fs.readFileSync(filePath));
-      return { fileName: file, ...content };
-    });
-
-    res.send(`
-      <link rel="stylesheet" href="/style.css">
-      <h1>Country Balls</h1>
-      
-      <!-- Add New Ball Form -->
-      <h2>Add New Country Ball</h2>
-      <form action="/add" method="POST" enctype="multipart/form-data" class="add-form">
-        <label>Country: <input type="text" name="country" required /></label><br>
-        <label>Short Name: <input type="text" name="shortName" required /></label><br>
-        <label>Catch Names: <input type="text" name="catchNames" required /></label><br>
-        <label>Health: <input type="number" name="health" required /></label><br>
-        <label>Strength: <input type="number" name="strength" required /></label><br>
-        <label>Rarity: <input type="number" name="rarity" required /></label><br>
-        <label>Emoji ID: <input type="text" name="emojiID" required /></label><br>
-        <label>Upload Image: <input type="file" name="image" accept="image/*" required /></label><br>
-        <button type="submit">Add Ball</button>
-      </form>
-    
-      <!-- Display Balls -->
-      <h2>Country Ball List</h2>
-      <ul>
-        ${ballData.map(ball => `
-          <li class="ball-item">
-            <div class="ball-item-info">
-              ${ball.country} (${ball.shortName}) - Health: ${ball.health}, Strength: ${ball.strength}, Rarity: ${ball.rarity}
-            </div>
-            <div class="ball-item-actions">
-              <form action="/edit/${ball.fileName}" method="GET" style="display: inline;">
-                <button type="submit">Edit</button>
-              </form>
-              <form action="/delete/${ball.fileName}" method="POST" style="display: inline;">
-                <button type="submit">Delete</button>
-              </form>
-              <img src="${ball.imagePath}" alt="${ball.country} Image">
-            </div>
-          </li>
-        `).join('')}
-      </ul>
-    `);
-    
-  });
+    res.render('home');
 });
 
-// Route to handle adding a new ball
-// Route to handle adding a new ball
-app.post('/add', upload.single('image'), (req, res) => {
+// Discord authentication routes
+app.get('/auth/discord', passport.authenticate('discord'));
+
+app.get('/auth/discord/callback', passport.authenticate('discord', { failureRedirect: '/' }),
+    (req, res) => {
+        res.redirect('/admin');
+    });
+
+// Dashboard route
+app.get('/dashboard', (req, res) => {
+    if (!req.isAuthenticated()) {
+        return res.redirect('/');
+    }
+    // Simulated user ball data
+    const userId = req.user.id;
+    const balls = []; // Fetch user's balls from MongoDB if needed
+    res.render('dashboard', { user: req.user, balls });
+});
+
+// Admin route
+app.get('/admin', (req, res) => {
+    if (!req.isAuthenticated() || !config.owners.includes(req.user.id)) {
+        return res.redirect('/');
+    }
+
+    const ballsDir = path.join(__dirname, 'Balls');
+    fs.readdir(ballsDir, (err, files) => {
+        if (err) return res.status(500).send('Error reading directory');
+
+        const ballsData = files
+            .filter(file => file.endsWith('.json'))
+            .map(file => {
+                const ball = JSON.parse(fs.readFileSync(path.join(ballsDir, file)));
+                return {
+                    fileName: file,
+                    country: ball.country,
+                    shortName: ball.shortName,
+                    health: ball.health,
+                    strength: ball.strength,
+                    rarity: ball.rarity
+                };
+            });
+
+        res.render('admin', { balls: ballsData });
+    });
+});
+
+app.get('/admin/edit/:fileName', (req, res) => {
+
+    if (!req.isAuthenticated() || !config.owners.includes(req.user.id)) {
+        return res.redirect('/');
+    }
+
+  const fileName = req.params.fileName; // e.g., Ball10.json
+  const filePath = path.join(__dirname, 'Balls', fileName); // Full path to the file
+
+  // Log the file path for debugging
+  console.log('File path:', filePath);
+
+  // Check if the file exists
+  if (!fs.existsSync(filePath)) {
+      return res.status(404).send('Country ball not found');
+  }
+
+  // Read and parse the ball data
+  const ballData = JSON.parse(fs.readFileSync(filePath));
+  res.render('edit', { ballData, fileName });
+});
+
+// Handle adding a new ball
+app.post('/admin/add', upload.single('imagePath'), (req, res) => {
+    const ballsDir = path.join(__dirname, 'Balls');
+
     // Read the existing files to determine the next file number
     fs.readdir(ballsDir, (err, files) => {
-      if (err) return res.status(500).send('Error reading directory');
-  
-      // Filter out only JSON files
-      const jsonFiles = files.filter(file => file.endsWith('.json'));
-  
-      // Calculate the next ball number based on the existing files
-      const nextBallNumber = jsonFiles.length + 1;
-      const newFileName = `Ball${nextBallNumber}.json`;
-      const newFilePath = path.join(ballsDir, newFileName);
-  
-      // Create the new ball object with the uploaded image path
-      const newBall = {
-        country: req.body.country,
-        shortName: req.body.shortName,
-        catchNames: req.body.catchNames,
-        health: req.body.health,
-        strength: req.body.strength,
-        rarity: req.body.rarity,
-        emojiID: req.body.emojiID,
-        imagePath: `/uploads/images/${req.file.filename}`
-      };
-  
-      // Write the new ball data to the next sequential file
-      fs.writeFile(newFilePath, JSON.stringify(newBall, null, 2), err => {
-        if (err) return res.status(500).send('Error saving file');
-        res.redirect('/');
-      });
+        if (err) return res.status(500).send('Error reading directory');
+
+        const jsonFiles = files.filter(file => file.endsWith('.json'));
+        const nextBallNumber = jsonFiles.length + 1;
+        const newFileName = `Ball${nextBallNumber}.json`;
+        const newFilePath = path.join(ballsDir, newFileName);
+
+        const newBall = {
+            country: req.body.country,
+            shortName: req.body.shortName,
+            catchNames: req.body.catchNames,
+            health: req.body.health,
+            strength: req.body.strength,
+            rarity: req.body.rarity,
+            emojiID: req.body.emojiID,
+            credits: req.body.credits,
+            type: req.body.type,
+            imagePath: req.file ? `/uploads/images/${req.file.filename}` : null
+        };
+
+        fs.writeFileSync(newFilePath, JSON.stringify(newBall, null, 2));
+        res.redirect('/admin');
     });
-  });
-  
-
-// Route to delete the JSON file
-app.post('/delete/:fileName', (req, res) => {
-  const fileName = req.params.fileName;
-  const filePath = path.join(ballsDir, fileName);
-
-  fs.unlink(filePath, err => {
-    if (err) return res.status(500).send('Error deleting file');
-    res.redirect('/');
-  });
 });
 
-// Route to display edit form
-app.get('/edit/:fileName', (req, res) => {
-  const fileName = req.params.fileName;
-  const filePath = path.join(ballsDir, fileName);
+// Handle deleting a ball
+app.post('/admin/delete/:fileName', (req, res) => {
+    const ballsDir = path.join(__dirname, 'Balls');
+    const fileName = req.params.fileName;
 
-  const ballData = JSON.parse(fs.readFileSync(filePath));
-  res.send(`
-    <link rel="stylesheet" href="/style.css">
-    <h1>Edit ${ballData.country}</h1>
-    <form action="/edit/${fileName}" method="POST" enctype="multipart/form-data" class="edit-form">
-      <label>Country: <input type="text" name="country" value="${ballData.country}" required /></label><br>
-      <label>Short Name: <input type="text" name="shortName" value="${ballData.shortName}" required /></label><br>
-      <label>Catch Names: <input type="text" name="catchNames" value="${ballData.catchNames}" required /></label><br>
-      <label>Health: <input type="number" name="health" value="${ballData.health}" required /></label><br>
-      <label>Strength: <input type="number" name="strength" value="${ballData.strength}" required /></label><br>
-      <label>Rarity: <input type="number" name="rarity" value="${ballData.rarity}" required /></label><br>
-      <label>Emoji ID: <input type="text" name="emojiID" value="${ballData.emojiID}" required /></label><br>
-      <label>Upload Image: <input type="file" name="image" accept="image/*" /></label><br>
-      <input type="hidden" name="existingImagePath" value="${ballData.imagePath}" />
-      <button type="submit">Save</button>
-    </form>
-  `);
+    fs.unlink(path.join(ballsDir, fileName), (err) => {
+        if (err) return res.status(500).send('Error deleting the file');
+        res.redirect('/admin');
+    });
 });
 
-// Route to handle editing a JSON file
-app.post('/edit/:fileName', upload.single('image'), (req, res) => {
-  const fileName = req.params.fileName;
-  const filePath = path.join(ballsDir, fileName);
+// Handle editing a ball
+app.post('/admin/edit/:fileName', upload.single('imagePath'), (req, res) => {
+    const ballsDir = path.join(__dirname, 'Balls');
+    const fileName = req.params.fileName;
+    const filePath = path.join(ballsDir, fileName);
 
-  const updatedData = {
-    country: req.body.country,
-    shortName: req.body.shortName,
-    catchNames: req.body.catchNames,
-    health: req.body.health,
-    strength: req.body.strength,
-    rarity: req.body.rarity,
-    emojiID: req.body.emojiID,
-    imagePath: req.file ? `/uploads/images/${req.file.filename}` : req.body.existingImagePath // Preserve old image if no new image uploaded
-  };
+    // Check if file exists before proceeding
+    if (!fs.existsSync(filePath)) {
+        return res.status(404).send('Country ball not found');
+    }
 
-  fs.writeFile(filePath, JSON.stringify(updatedData, null, 2), err => {
-    if (err) return res.status(500).send('Error saving file');
-    res.redirect('/');
-  });
+    // Load existing data from the file
+    const existingBall = JSON.parse(fs.readFileSync(filePath));
+
+    // Update only the provided fields, keeping existing values for others
+    const updatedBall = {
+        country: req.body.country || existingBall.country,
+        shortName: req.body.shortName || existingBall.shortName,
+        catchNames: req.body.catchNames || existingBall.catchNames,
+        health: req.body.health || existingBall.health,
+        strength: req.body.strength || existingBall.strength,
+        rarity: req.body.rarity || existingBall.rarity,
+        emojiID: req.body.emojiID || existingBall.emojiID,
+        credits: req.body.credits || existingBall.credits,
+        type: req.body.type || existingBall.type,
+        imagePath: req.file ? `/uploads/images/${req.file.filename}` : existingBall.imagePath
+    };
+
+    // Write updated data back to the JSON file
+    fs.writeFileSync(filePath, JSON.stringify(updatedBall, null, 2));
+    res.redirect('/admin');
 });
 
+// Start the server
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
 
-
-
-// Change "Your bot token" by your bot token.
-require('dotenv').config();
-
+// Log in the bot
 client.login(process.env.TOKEN);
-

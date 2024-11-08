@@ -39,7 +39,9 @@ options: [
   },
   code: `
     
-$!createForumPost[1289255720763523203;$option[platform]-$username;$title[New Bug Report!]
+$jsonLoad[config;$readFile[./config.json]] $let[report;$env[config;Report]]
+
+$!createForumPost[$get[report];$option[platform]-$username;$title[New Bug Report!]
 $addField[Description;$option[description]]
 $addField[Reproduction;$option[reproduction]]
 $addField[Platform;$option[platform]]

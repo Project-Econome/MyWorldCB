@@ -2,9 +2,11 @@
   "country": "Poland",
   "shortName": "Poland",
   "catchNames": "Poland",
-  "health": "1",
-  "strength": "1",
-  "rarity": "0",
+  "health": "2000",
+  "strength": "1400",
+  "rarity": "5",
   "emojiID": "1290760149442756658",
+  "credits": "achi_top",
+  "type": "DEMOCAP.webp",
   "imagePath": "/uploads/images/image-1727814791651-837473427.webp"
 }

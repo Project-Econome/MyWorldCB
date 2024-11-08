@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h1>Admin Dashboard</h1>
+  
+  <div class="form-container">
+    <form action="/admin/add" method="POST" enctype="multipart/form-data">
+      <label>Country: <input type="text" name="country" required></label><br>
+      <label>Short Name: <input type="text" name="shortName" required></label><br>
+      <label>Catch Names: <input type="text" name="catchNames" required></label><br>
+      <label>Health: <input type="number" name="health" required></label><br>
+      <label>Strength: <input type="number" name="strength" required></label><br>
+      <label>Rarity: <input type="number" name="rarity" required></label><br>
+      <label>Emoji ID: <input type="text" name="emojiID" required></label><br>
+      <label>Credits: <input type="text" name="credits"></label><br>
+      <label>Type: <input type="text" name="type" required></label><br>
+      <label>Image: <input type="file" name="imagePath" required></label><br>
+      <button type="submit">Add Country Ball</button>
+    </form>
+  </div>
+
+  <h2>Existing Country Balls</h2>
+  <ul class="ball-list">
+    <% balls.forEach(ball => { %>
+      <li>
+  <strong><%= ball.country %> (<%= ball.shortName %>)</strong> - Health: <%= ball.health %>, Strength: <%= ball.strength %>, Rarity: <%= ball.rarity %>
+  <div class="button-grid">
+    <form action="/admin/edit/<%= ball.fileName %>" method="GET" style="display:inline;">
+    <button type="submit" class="edit-btn">Edit</button>
+</form>
+    <form action="/admin/delete/<%= ball.fileName %>" method="POST" style="display: inline;">
+      <button type="submit" class="delete-btn">Delete</button>
+    </form>
+  </div>
+</li>
+    <% }) %>
+  </ul>
+  </div>
+</body>
+</html>

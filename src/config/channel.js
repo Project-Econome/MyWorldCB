@@ -12,10 +12,9 @@ module.exports = {
             }
         ]
     },
-     code: `$onlyForUsers[$ephemeral
- This is not for you!;$botOwnerID;838105973985771520]
+     code: `$onlyIf[$or[$hasPerms[$guildID;$authorID;Administrator]==true;$authorID==$botOwnerID];$ephemeral Sorry Admin Only Command]
 
- $title[Setup For WorldCB - Done]
+ $title[Setup For $username[$botID] - Done]
  $description[By Adding/Setting this bot up you hereby agree to our ToS and Privacy Policy]
  $setGuildVar[SpawnChan;$option[channel]]
  $setGuildVar[SpawnChanEnabled;true]

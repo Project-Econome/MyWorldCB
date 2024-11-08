@@ -2,9 +2,11 @@
   "country": "Russia",
   "shortName": "USSR",
   "catchNames": "USSR, Russia",
-  "health": "1",
-  "strength": "1",
-  "rarity": "",
-  "emojiID": "1290071151434793012",
+  "health": "2000",
+  "strength": "1600",
+  "rarity": "4",
+  "emojiID": "1291814537162391562",
+  "credits": "unknown",
+  "type": "DICCAP.webp",
   "imagePath": "/uploads/images/image-1727639556776-322056149.webp"
 }

@@ -2,9 +2,11 @@
   "country": "France",
   "shortName": "France",
   "catchNames": "France",
-  "health": "1",
-  "strength": "1",
-  "rarity": "0",
+  "health": "1500",
+  "strength": "1300",
+  "rarity": "8",
   "emojiID": "1290760096036421682",
+  "credits": "achi_top",
+  "type": "DEMOCAP.webp",
   "imagePath": "/uploads/images/image-1727814860053-601166971.webp"
 }

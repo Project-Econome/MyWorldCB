@@ -2,9 +2,11 @@
   "country": "Philippines",
   "shortName": "Philippines",
   "catchNames": "Philippines",
-  "health": "10",
-  "strength": "10",
-  "rarity": "0",
-  "emojiID": "1",
+  "health": "1500",
+  "strength": "1000",
+  "rarity": "10",
+  "emojiID": "1291802032792928316",
+  "credits": "unknown",
+  "type": "DEMOCAP.webp",
   "imagePath": "/uploads/images/image-1727639529355-707461361.webp"
 }

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Country Ball</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h1>Edit Country Ball</h1>
+
+  <div class="form-container">
+    <form action="/admin/edit/<%= fileName %>" method="POST" enctype="multipart/form-data">
+      <label>Country: <input type="text" name="country" value="<%= ballData.country %>" required></label><br>
+      <label>Short Name: <input type="text" name="shortName" value="<%= ballData.shortName %>" required></label><br>
+      <label>Catch Names: <input type="text" name="catchNames" value="<%= ballData.catchNames %>" required></label><br>
+      <label>Health: <input type="text" name="health" value="<%= ballData.health %>" required></label><br>
+      <label>Strength: <input type="text" name="strength" value="<%= ballData.strength %>" required></label><br>
+      <label>Rarity: <input type="text" name="rarity" value="<%= ballData.rarity %>" required></label><br>
+      <label>Emoji ID: <input type="text" name="emojiID" value="<%= ballData.emojiID %>" required></label><br>
+      <label>Credits: <input type="text" name="credits" value="<%= ballData.credits %>"></label><br>
+      <label>Type: <input type="text" name="type" value="<%= ballData.type %>" required></label><br>
+      <label>Image: <input type="file" name="imagePath"></label><br> <!-- Optional image upload -->
+      <input type="hidden" name="existingImagePath" value="<%= ballData.imagePath %>"> <!-- Preserve old image path -->
+      <button type="submit">Save Changes</button>
+    </form>
+  </div>
+
+  <a href="/admin">Back to Admin</a>
+</body>
+</html>

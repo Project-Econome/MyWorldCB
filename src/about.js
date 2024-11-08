@@ -15,13 +15,19 @@ $let[directory;Balls]
 $textSplit[$readDir[./$get[directory];,];,]
 
 $title[$username[$botID] Discord Bot]
-$description[Collect CountryBalls on Discord, exchange them and battle with friends!
+$description[
 
-Running version 1.0.0
+$jsonLoad[config;$readFile[./config.json]] $let[version;$env[config;Version]]
 
-**$getSplitTextLength** CountryBalls to collect
-**$userCount** players that caught $getGlobalVar[globalCaught;0] CountryBalls
+Collect $getGlobalVar[BallName;CountryBall]'s on Discord, exchange them and battle with friends!
+
+Running version $get[version]
+
+**$getSplitTextLength** $getGlobalVar[BallName;CountryBall]'s to collect
+**$userCount** players that caught $getGlobalVar[globalCaught;0] $getGlobalVar[BallName;CountryBall]'s
 **$guildCount** servers playing
+
+
 
 This bot was made by **$hyperlink[Econome;https://discord.com/users/838105973985771520]** owned by **$hyperlink[Ariel Aram;https://discord.com/users/525421785001361408]**, consider supporting me on my Ko-Fi :heart:]
     
