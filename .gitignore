@@ -1,1 +1,4 @@
 .env
+src/completion.js
+node_modules
+node
