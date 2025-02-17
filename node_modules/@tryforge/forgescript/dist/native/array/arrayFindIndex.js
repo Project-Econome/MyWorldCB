@@ -8,7 +8,7 @@ const structures_1 = require("../../structures");
 exports.default = new structures_1.NativeFunction({
     name: "$arrayFindIndex",
     version: "1.0.0",
-    description: "Finds the index of an element in the array",
+    description: "Finds the index of a first found element in the array",
     unwrap: false,
     output: structures_1.ArgType.Number,
     args: [

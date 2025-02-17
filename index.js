@@ -230,6 +230,69 @@ $if[$env[response]==;;Note: $env[response]]]
     
 `});
 
+client.functions.add({
+    name: "completion",
+    params: ["directory", "user"],
+    code: `
+$scope[
+
+$arrayLoad[ballsOwned;,;$replace[$readDir[./$env[directory];,];.json;]]
+
+$let[Amount;$arrayLength[ballsOwned]]
+$let[owned;0]
+
+$arrayCreate[owned;0]
+$arrayCreate[unowned;0]
+
+$arrayForEach[ballsOwned;balls;
+$if[$checkContains[$getUserVar[Caught;$env[user]];$env[balls]]==true;
+
+$arrayPush[owned;$env[balls]]
+;
+$arrayPush[unowned;$env[balls]]
+    ]]
+
+$return[{
+  "owned": "$arrayJoin[owned;,]",
+  "unowned": "$arrayJoin[unowned;,]",
+  "proOwned": "$arrayLength[owned]",
+  "proUnowned": "$arrayLength[unowned]",
+}]
+] 
+    
+`});
+
+client.functions.add({
+    name: "refurb",
+    params: ["user"],
+    code: `
+$scope[
+
+    $defer
+$let[index;1]
+
+$arrayLoad[ballsOwned;,;$replace[$readDir[./Balls;,];.json;]]
+
+$arrayCreate[owned;0]
+$arrayCreate[unowned;0]
+
+$loop[$arrayLength[ballsOwned]; 
+
+$if[$checkContains[$getUserVar[Caught;$env[user]];Ball$get[index]]==true;
+
+$arrayPush[owned;Ball$get[index]];
+$arrayPush[unowned;Ball$get[index]]
+    ]
+$letSum[index;1]
+]
+
+$setUserVar[owned;$arrayJoin[owned;,];$env[user]]
+$setUserVar[unowned;$arrayJoin[unowned;,];$env[user]]
+
+$return[Refurbished User Data Successfully]
+] 
+    
+`});
 
 client.functions.add({
     name: "translateText",
@@ -253,7 +316,7 @@ mongoose.connect(config.mongo, { useNewUrlParser: true, useUnifiedTopology: true
     .catch(err => console.log(err));
 
 const app = express();
-const PORT = process.env.PORT || 5127;
+const PORT = process.env.PORT || 5129;
 
 // Setup session middleware
 app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false }));

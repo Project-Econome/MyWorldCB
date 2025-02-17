@@ -62,6 +62,17 @@ $if[$getUserVar[inventory;$authorID;open]==open;$callFunction[ballSuccess;$autho
 
 $jsonLoad[config;$readFile[./config.json]] $let[logs;$env[config;Log]]
 
+
+$if[$channelExists[$get[logs]]==false;$log[A ball has been caught!
+Details:
+Server: $guildName
+Author: $username
+User ID: $authorID
+Guild ID: $guildID
+Ball: $get[Country]]
+
+;
+
 $sendMessage[$get[logs];
 A ball has been caught!
 $title[Details:]
@@ -71,8 +82,7 @@ User ID: $authorID
 Guild ID: $guildID
 Ball: $get[Country]]
 
-
-]
+]]
 
         $setGlobalVar[globalCaught;$math[$getGlobalVar[globalCaught;0]+1]]
 

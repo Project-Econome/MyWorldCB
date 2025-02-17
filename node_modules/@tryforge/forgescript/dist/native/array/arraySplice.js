@@ -4,8 +4,9 @@ const structures_1 = require("../../structures");
 exports.default = new structures_1.NativeFunction({
     name: "$arraySplice",
     version: "1.0.0",
-    description: "Removes x elements starting from y index",
+    description: "Removes x elements starting from y index, returns deleted elements",
     unwrap: true,
+    output: structures_1.ArgType.Json,
     args: [
         {
             name: "variable",
@@ -39,9 +40,8 @@ exports.default = new structures_1.NativeFunction({
     brackets: true,
     execute(ctx, [name, index, count, elements]) {
         const arr = ctx.getEnvironmentKey(name);
-        if (Array.isArray(arr)) {
-            arr.splice(index, count, ...elements);
-        }
+        if (Array.isArray(arr))
+            return this.successJSON(arr.splice(index, count, ...elements));
         return this.success();
     },
 });
