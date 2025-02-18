@@ -47,7 +47,7 @@ const express = require('express');
     "extensions": [
         new ForgeDB({
         type: "mongodb",
-url: "mongodb+srv://Fradz:EconomeMusic10@cluster0.fjivzs3.mongodb.net/bot2"
+url: "mongodb+srv://mongo details@cluster0.fjivzs3.mongodb.net/bot2"
         }),
         new ForgeCanvas()
     ],
