@@ -6,5 +6,5 @@
   "Version": "1.1.0",
   "Caught": "Caught",
   "owners": ["838105973985771520","525421785001361408"],
-  "mongo": "mongodb+srv://Fradz:EconomeMusic10@cluster0.fjivzs3.mongodb.net/bot2?ssl=true&authSource=admin"
+  "mongo": "mongourl"
 }
