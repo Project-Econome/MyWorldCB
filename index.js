@@ -176,9 +176,13 @@ client.functions.add({
 $scope[
 
 $if[$env[true]==true;
+
+$arrayLoad[data;,;$getUserVar[owned]]
+$arrayPush[data;$env[id]]
+
 $jsonLoad[config;$readFile[./config.json]] $let[caught;$env[config;Caught]] $let[name;$env[config;Name]]
 $return[<@$env[user]> You $get[caught] **$env[ball]**! $inlineCode[$env[success]]
-
+$setUserVar[owned;$arrayJoin[data;,]] $log[$callFunction[reaknowledge;$authorID]]
 $if[$checkContains[$getUserVar[Caught;$env[user]];$env[id]]==false;This is a $bold[new $get[name]] that has been added to your completion!]
 ]
 
@@ -201,10 +205,14 @@ client.functions.add({
 $scope[
 
 $if[$env[true]==true;
+
+$arrayLoad[data;,;$getUserVar[owned]]
+$arrayPush[data;$env[id]]
+
 $jsonLoad[config;$readFile[./config.json]] $let[caught;$env[config;Caught]] $let[name;$env[config;Name]]
 $return[A User Has $get[caught] **$env[ball]**! $inlineCode[$env[success]]
-
-$if[$checkContains[$getUserVar[Caught;$env[user]];$env[id]]==false;This is a $bold[new $get[name]] that has been added to your completion!]
+$setUserVar[owned;$arrayJoin[data;,]] $log[$callFunction[reaknowledge;$authorID]]
+$if[$checkContains[$getUserVar[Caught;$authorID];$env[id]]==false;This is a $bold[new $get[name]] that has been added to your completion!]
 ]
 
 ;
@@ -291,6 +299,53 @@ $setUserVar[unowned;$arrayJoin[unowned;,];$env[user]]
 
 $return[Refurbished User Data Successfully]
 ] 
+    
+`});
+
+client.functions.add({
+    name: "reaknowledge",
+    params: ["user"],
+    code: `
+$scope[
+
+$djsEval[
+(async () => {
+    const fs = require('fs');
+    const path = require('path');
+
+    // Load the user's caught balls from the context
+    let userCaughtBalls = '$getUserVar[owned;$env[user]]';
+    let caughtBalls = userCaughtBalls ? userCaughtBalls.split(',') : [\\];
+
+    // Directory where ball JSON files are stored (relative path)
+    const ballsDirectory = path.join(process.cwd(), 'Balls');
+
+    // Read the directory and process the balls
+    function loadUncaughtBalls() {
+        const files = fs.readdirSync(ballsDirectory);
+        const ballNames = files.map(file => file.replace('.json', ''));
+
+        // Return the balls that are NOT caught
+        const result = ballNames.filter(ball => !caughtBalls.includes(ball));
+
+        return result.join(',');
+    }
+
+    // Load uncaught balls and save results in the environment
+    let result = loadUncaughtBalls();
+    ctx.setEnvironmentKey('caughtBallList', result);
+
+    return '';
+})();
+]
+
+
+$setUserVar[unowned;$env[caughtBallList];$env[user]]
+$return[applied data]
+
+
+
+]
     
 `});
 
